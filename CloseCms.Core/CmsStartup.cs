@@ -1,4 +1,7 @@
 ﻿using System;
+using CloseCms.Core.Interfaces;
+using CloseCms.Core.Models;
+using CloseCms.Core.Services;
 using CloseCms.Data.Context;
 using CloseCms.Data.Interfaces;
 using CloseCms.Data.Migrations;
@@ -21,14 +24,13 @@ namespace CloseCms.Core
                 throw new Exception("ConnectionString CloseCmsConnection is not set");
             }
 
-            services.AddDbContext<CloseCmsContext>(options => options.UseSqlServer(connectionString));
-
-            AddDependencies(services);
-            SetupFluentMigrator(services, connectionString);
+            AddDependencies(services, connectionString);
 
             var serviceProvider = services.BuildServiceProvider(false);
 
             RunUpMigrations(serviceProvider);
+
+            serviceProvider.GetRequiredService<IReflectionService>().GetTypesWithSubclassesOf<BaseResource>();
 
             return serviceProvider;
         }
@@ -38,18 +40,21 @@ namespace CloseCms.Core
 
         }
 
-        private static void AddDependencies(IServiceCollection services)
+        private static void AddDependencies(IServiceCollection services, string connectionString)
         {
+            // Repositories
             services.AddScoped<IResourceRepository, ResourceRepository>();
-        }
-        
-        private static void SetupFluentMigrator(IServiceCollection services, string connectionString)
-        {
+
+            // Services
+            services.AddScoped<IReflectionService, ReflectionService>();
+
             services.AddFluentMigratorCore().ConfigureRunner(rb => rb
                 .AddSqlServer2016()
                 .WithGlobalConnectionString(connectionString)
                 .ScanIn(typeof(InitMigration).Assembly).For.Migrations()
             );
+
+            services.AddDbContext<CloseCmsContext>(options => options.UseSqlServer(connectionString));
         }
 
         private static void RunUpMigrations(IServiceProvider serviceProvider)
