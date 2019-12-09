@@ -6,6 +6,7 @@ namespace CloseCms.Data.Entities
     public class ResourceEntity : BaseEntity
     {
         public string Name { get; set; }
-        public string AssemblyPath { get; set; }
+        public string ClassName { get; set; }
+        public string ClassPath { get; set; }
     }
 }

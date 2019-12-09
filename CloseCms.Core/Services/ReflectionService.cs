@@ -8,18 +8,15 @@ namespace CloseCms.Core.Services
 {
     public class ReflectionService : BaseService, IReflectionService
     {
-        public List<Type> GetTypesWithSubclassesOf<T>() where T : class
+        public List<Type> GetClassesThatIsSubclassOf<TBaseClass>() where TBaseClass : class
         {
-            var values = new List<Type>();
+            var types = new List<Type>();
             foreach (var assembly in LoadAllAssemblies())
             {
-                var types = assembly.GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(T)));
-                if (types == null) continue;
-                    
-                values.AddRange(types);
+                types.AddRange(assembly.GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(TBaseClass))));
             }
 
-            return values;
+            return types;
         }
 
         public IEnumerable<Assembly> LoadAllAssemblies()

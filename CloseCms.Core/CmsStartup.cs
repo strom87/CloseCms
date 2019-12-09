@@ -30,8 +30,6 @@ namespace CloseCms.Core
 
             RunUpMigrations(serviceProvider);
 
-            serviceProvider.GetRequiredService<IReflectionService>().GetTypesWithSubclassesOf<BaseResource>();
-
             return serviceProvider;
         }
 
@@ -46,6 +44,7 @@ namespace CloseCms.Core
             services.AddScoped<IResourceRepository, ResourceRepository>();
 
             // Services
+            services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IReflectionService, ReflectionService>();
 
             services.AddFluentMigratorCore().ConfigureRunner(rb => rb

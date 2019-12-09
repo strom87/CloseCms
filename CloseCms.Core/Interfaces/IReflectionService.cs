@@ -6,7 +6,7 @@ namespace CloseCms.Core.Interfaces
 {
     public interface IReflectionService
     {
-        List<Type> GetTypesWithSubclassesOf<T>() where T : class;
+        List<Type> GetClassesThatIsSubclassOf<TBaseClass>() where TBaseClass : class;
         IEnumerable<Assembly> LoadAllAssemblies();
     }
 }
